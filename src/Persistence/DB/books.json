@@ -1,24 +1,26 @@
-{
-  "0": {
+[
+  {
     "id": "ee2133bc-7cdc-4ffd-937f-1b1f14a32511",
     "title": "test",
-    "author": "test",
-    "borrowedDate": "2023-07-28T08:38:44.999Z",
-    "borrowedBy": {
-      "firstName": "test",
-      "lastName": "test"
-    },
-    "returnDate": "2023-08-12T08:38:44.999Z"
+    "author": "autheur test",
+    "borrowedDate": null,
+    "borrowedBy": null,
+    "returnDate": null
   },
-  "1": {
+  {
     "id": "ee2133bc-7cdc-4ffd-937f-1b1f14a32511",
-    "title": "test",
-    "author": "test",
-    "borrowedDate": "2023-07-28T08:38:44.999Z",
-    "borrowedBy": {
-      "firstName": "test",
-      "lastName": "test"
-    },
-    "returnDate": "2023-08-12T08:38:44.999Z"
+    "title": "le super bouquin",
+    "author": "Michel",
+    "borrowedDate": null,
+    "borrowedBy": null,
+    "returnDate": null
+  },
+  {
+    "title": "super Livre",
+    "author": "Nicolas Gretten",
+    "borrowedBy": null,
+    "returnDate": null,
+    "borrowedDate": null,
+    "id": "12a5c472-7ab6-4886-b05b-8c4342bedde5"
   }
-}
+]

@@ -1,4 +1,4 @@
-import BookBorrowedEvent from "../Domain/Events/BookBorrowedEvent";
+import BookBorrowedEvent from "../../Domain/Events/BookBorrowedEvent";
 import IEventHandler from "./IEventHandler";
 
 export default class LogEventHandler implements IEventHandler<BookBorrowedEvent> {

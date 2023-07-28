@@ -1,49 +1,46 @@
 import BookEntity from "../Entities/BookEntity";
 import MemberEntity from "../Entities/MemberEntity";
-import BookBorrowedEvent from "src/Domain/Events/BookBorrowedEvent";
-import EventBus from "src/Domain/Events/EventBus";
+import BookRepository from "src/Persistence/Repository/BookRepository";
 
 export default class MemberBorrowBookAggregate {
-    private books: BookEntity[];
-    constructor() {
-        this.books = [];
-    }
-
     borrowBook(book: BookEntity, member: MemberEntity): BookEntity {
-        // Vérifier si le livre est déjà emprunté
         if (book.borrowedBy !== null) {
             throw new Error("Le livre est déjà emprunté.");
         }
 
-        const borrowedDate = new Date();
-        const returnDate = this.addDays(new Date(), 15);
-
-        // Marquer le livre comme emprunté
         book.borrowedBy = member;
-        book.borrowedDate = borrowedDate;
-        book.returnDate = returnDate;
+        book.borrowedDate = new Date();
+        book.returnDate = this.addDays(new Date(), 15);
 
-        // Ajouter le livre à la liste des livres empruntés dans l'agrégat
+        new BookRepository().update(book);
+
         return book;
     }
 
-    returnBook(book: BookEntity): void {
-        // Vérifier si le livre est emprunté
+    returnBook(book: BookEntity): BookEntity {
         if (book.borrowedBy === null) {
             throw new Error("Le livre n'est pas emprunté.");
         }
 
-        // Marquer le livre comme non emprunté
         book.borrowedDate = null;
         book.returnDate = null;
+        book.borrowedBy = null
 
-        // Retirer le livre de la liste des livres empruntés dans l'agrégat
-        this.books = this.books.filter((b) => b !== book);
+        new BookRepository().update(book);
+
+        return book;
+    }
+
+    findAll(): BookEntity[] {
+        return new BookRepository().findAll()
     }
 
     getBorrowedBooks(): BookEntity[] {
-        // Renvoyer la liste des livres empruntés dans l'agrégat
-        return this.books;
+        return new BookRepository().findAllWithParams('borrowedBy')
+    }
+
+    create(book: BookEntity): BookEntity {
+        return new BookRepository().create(book);
     }
 
     addDays(date: Date, days: number): Date {

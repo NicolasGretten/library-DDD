@@ -1,50 +1,61 @@
-import express, { Application, Request, Response } from 'express';
-import HttpController from "src/Application/Controllers/HttpController";
-import LogEventHandler from "src/Application/LogEventHandler";
-import MemberBorrowBookAggregate from "src/Domain/Aggregates/MemberBorrowBookAggregate";
+import express, { Request, Response } from 'express';
+import BookController from "src/Application/Controllers/BookController";
+import LogEventHandler from "src/Application/Handler/LogEventHandler";
 import EventBus from "src/Domain/Events/EventBus";
-import LibraryService from "src/Domain/Services/LibraryService";
-import BookRepository from "src/Persistence/BookRepository";
+import BookService from "src/Domain/Services/BookService";
+import MemberController from "src/Application/Controllers/MemberController";
+import MemberService from "src/Domain/Services/MemberService";
+import bodyParser from "body-parser";
+import BookEntity from "src/Domain/Entities/BookEntity";
+import MemberEntity from "src/Domain/Entities/MemberEntity";
 
-// Créer l'Event Bus
 const eventBus = new EventBus();
 
-// Créer le service du domaine avec l'Event Bus
-const libraryService = new LibraryService(eventBus);
+const bookService = new BookService(eventBus);
+const memberService = new MemberService(eventBus);
 
-// Créer le controller et injecter le service du domaine
-const httpController = new HttpController(libraryService);
+const bookController = new BookController(bookService);
+const memberController = new MemberController(memberService);
 
-const db = new BookRepository()
-
-// Créer le LogEventHandler et s'abonner à l'Event Bus pour le BookBorrowedEvent
+// LOG LES EVENT CREER DEPUIS LES SEVRICES
 const logEventHandler = new LogEventHandler();
 eventBus.subscribe("BookBorrowedEvent", logEventHandler);
 
-const app: Application = express();
+const app: express.Application = express();
+app.use(bodyParser.json());
+app.use(bodyParser.raw());
 const port = 3000;
 
 app.get('/books', (req: Request, res: Response) => {
-    res.send(httpController.listAllBook())
+    res.send(bookController.getAllBooks())
+});
+
+app.post('/books', (req: Request, res: Response) => {
+    console.log(req.body);
+    res.send(bookController.create(req.body as BookEntity))
 });
 
 app.get('/books/borrowed', (req: Request, res: Response) => {
-    res.send(httpController.listAllBorrowedBook())
+    res.send(bookController.listAllBorrowedBook())
 });
 
-app.get('/members', (req: Request, res: Response) => {
-    res.send(httpController.listAllMembers())
-});
-
-app.post('/books/:id/return', (req: Request, res: Response) => {
+app.patch('/books/:id/return', (req: Request, res: Response) => {
     const bookId = req.params.id;
-    res.send(httpController.returnABook(bookId))
+    res.send(bookController.returnABook(bookId))
 });
 
 app.post('/books/:id/borrow/:memberId', (req: Request, res: Response) => {
     const bookId = req.params.id;
     const memberId = req.params.memberId;
-    res.send(httpController.borrowABook(bookId, memberId))
+    res.send(bookController.borrowABook(bookId, memberId))
+});
+
+app.get('/members', (req: Request, res: Response) => {
+    res.send(memberController.listAllMembers())
+});
+
+app.post('/members', (req: Request, res: Response) => {
+    res.send(memberController.create(req.body as MemberEntity))
 });
 
 app.listen(port, () => {

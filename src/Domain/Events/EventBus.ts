@@ -1,6 +1,5 @@
-// src/Domain/Events/EventBus.ts
-import IEvent from "../../Application/IEvent";
-import IEventHandler from "../../Application/IEventHandler";
+import IEvent from "../../Application/Event/IEvent";
+import IEventHandler from "../../Application/Handler/IEventHandler";
 
 export default class EventBus {
     private eventHandlers: Map<string, IEventHandler<IEvent>[]>;
